@@ -1,73 +1,109 @@
-# React + TypeScript + Vite
+# Second Brain Chatbot Web Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A customizable chatbot web component built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is designed to be used as a web component.
 
-## React Compiler
+### Building the Project
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+To build the web component:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm run build
+# or
+pnpm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This will generate the following files in the `dist` directory:
+- `secondBrainChatBot.js`
+- `secondBrainChatBot.css`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+## Usage
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### In a HTML file
+
+1. Include the script and stylesheet in your HTML file:
+
+```html
+<script type="module" src="./path/to/dist/secondBrainChatBot.js"></script>
+<link rel="stylesheet" href="./path/to/dist/secondBrainChatBot.css">
 ```
+
+2. Use the custom element:
+
+```html
+<second-brain-chatbot
+  enterprise-token="YOUR_ENTERPRISE_TOKEN"
+  user-token="YOUR_USER_TOKEN"
+  member-id="YOUR_MEMBER_ID"
+  base_api="YOUR_BASE_API_URL"
+></second-brain-chatbot>
+```
+
+### Attributes
+
+| Attribute          | Description                                      | Required |
+| ------------------ | ------------------------------------------------ | :------: |
+| `enterprise-token` | The enterprise token for authentication.         |   Yes    |
+| `user-token`       | The user token for authentication.               |   Yes    |
+| `member-id`        | The member ID associated with the user.          |   Yes    |
+| `base_api`         | The base URL for the API (e.g., `https://.../`). |   Yes    |
+
+## Development
+
+### Prerequisites
+
+- Node.js (v18+)
+- pnpm (recommended) or npm
+
+### Setup
+
+```bash
+pnpm install
+```
+
+### Running Locally
+
+To start the development server:
+
+```bash
+pnpm run dev
+```
+
+### Linting and Formatting
+
+To run linting:
+
+```bash
+pnpm run lint
+# or fix automatically
+pnpm run lint:fix
+```
+
+To format code:
+
+```bash
+pnpm run format
+```
+
+### Testing the Build
+
+To test the built web component using the included consumer app:
+
+```bash
+pnpm run start:consumer
+```
+
+This will serve the project and open the consumer app at `http://localhost:3000/consumer-app/index.html`.
+
+## Project Structure
+
+- `src/`: Source code
+  - `components/`: React components
+  - `store/`: Zustand stores
+  - `api-manager.ts`: API handling logic
+  - `WebCompo.tsx`: Web Component wrapper
+- `dist/`: Built artifacts
+- `consumer-app/`: Simple HTML app for testing the component
