@@ -13,13 +13,13 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && rm -rf consumer-app/dist && cp -r dist consumer-app/",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "serve": "npx serve .",
-    "start:consumer": "npx serve ."
+    "serve": "serve .",
+    "start:consumer": "cd consumer-app && pnpm start"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
@@ -43,6 +43,7 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "prettier": "^3.7.0",
+    "serve": "^14.2.5",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"

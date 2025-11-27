@@ -11,18 +11,16 @@ type AppProps = {
 };
 
 function App({ enterpriseToken, userToken, memberId, baseApi }: AppProps) {
-  const authStoreInstance = authStore();
-
   useEffect(() => {
     if (!enterpriseToken || !userToken || !memberId || !baseApi) {
       return;
     }
 
-    authStoreInstance.setEnterpriseToken(enterpriseToken);
-    authStoreInstance.setUserToken(userToken);
-    authStoreInstance.setMemberId(memberId);
-    authStoreInstance.setBaseApi(baseApi);
-  }, [enterpriseToken, userToken, memberId, baseApi, authStoreInstance]);
+    authStore.getState().setEnterpriseToken(enterpriseToken);
+    authStore.getState().setUserToken(userToken);
+    authStore.getState().setMemberId(memberId);
+    authStore.getState().setBaseApi(baseApi);
+  }, [enterpriseToken, userToken, memberId, baseApi]);
 
   return <CollapsibleChatbot />;
 }
