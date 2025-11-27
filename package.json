@@ -1,13 +1,25 @@
 {
-  "name": "trial",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@secondbrain/chatbot",
+  "private": false,
+  "version": "0.0.1",
   "type": "module",
+  "main": "./dist/secondBrainChatBot.js",
+  "module": "./dist/secondBrainChatBot.js",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "preview": "vite preview",
+    "serve": "npx serve .",
+    "start:consumer": "npx serve ."
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
@@ -25,9 +37,12 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.2.2",
     "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "prettier": "^3.7.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"

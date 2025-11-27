@@ -1,33 +1,146 @@
-import { useState } from "react";
-import { MessageCircle, X, Send, Minus } from "lucide-react";
+import { useState } from 'react';
+import { MessageCircle, X, Send, Minus } from 'lucide-react';
+import { MessageSender } from '../constants/chat.constants';
+import { authStore } from '../store/auth.store';
+import { ChatApi } from '../api/chat.api';
+import { parseEndpoint } from '../helpers/common.helper';
+import { ENDPOINTS, QUERY_PATH } from '../constants/endpoint.constants';
 
 export default function CollapsibleChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hi! How can I help you today?", sender: "bot" },
-  ]);
+  const [message, setMessage] = useState('');
+  const [botUpdateText, setBotUpdateText] = useState('');
+  const [messages, setMessages] = useState<
+    {
+      id: number | string;
+      text: string;
+      sender: MessageSender;
+    }[]
+  >([{ id: 1, text: 'Hi! How can I help you today?', sender: MessageSender.Bot }]);
 
-  const handleSend = () => {
+  const simulateBotResponse = async () => {
+    const { conversationId, memberId, enterpriseToken, setConversationId } = authStore.getState();
+    let convoId = conversationId;
+    if (!memberId || !enterpriseToken) return;
+    if (!conversationId) {
+      const initiateChatResponse = await ChatApi.initiateChat({
+        body: {
+          title: message,
+          member_uuid: memberId,
+        },
+        params: {
+          enterpriseId: enterpriseToken,
+        },
+      });
+      setConversationId(initiateChatResponse.data.conversation_uuid);
+      convoId = initiateChatResponse.data.conversation_uuid;
+    }
+    let botMessageId = messages.length + 1;
+
+    setMessages((prev) => {
+      botMessageId = prev.length + 1;
+      return [...prev, { id: botMessageId, text: '', sender: MessageSender.Bot }];
+    });
+    const body = {
+      member_uuid: memberId,
+      query: message,
+      stream: true,
+      citations: true,
+    };
+
+    const baseApi = authStore.getState().baseApi;
+    const response = await fetch(
+      parseEndpoint(baseApi + ENDPOINTS.SEND_MESSAGE, {
+        [QUERY_PATH.CONVERSATION_ID]: convoId!,
+        [QUERY_PATH.ENTERPRISE_ID]: enterpriseToken,
+      }),
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+        },
+        body: JSON.stringify(body),
+      },
+    );
+
+    if (!response.body) return;
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+
+    let done = false;
+    let buffer = '';
+
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+
+      if (!value) {
+        continue;
+      }
+
+      buffer += decoder.decode(value, { stream: !done });
+
+      let newlineIndex = buffer.indexOf('\n');
+      while (newlineIndex !== -1) {
+        const rawLine = buffer.slice(0, newlineIndex).trim();
+        buffer = buffer.slice(newlineIndex + 1);
+
+        if (rawLine) {
+          // Try to extract JSON object from the line (handles prefixes like "delta ")
+          const jsonStart = rawLine.indexOf('{');
+          if (jsonStart !== -1) {
+            const jsonPart = rawLine.slice(jsonStart);
+            try {
+              const parsed = JSON.parse(jsonPart) as {
+                type?: string;
+                value?: string;
+              };
+              if (parsed.type === 'update') {
+                const text = parsed.value;
+                setBotUpdateText(text || '');
+              } else if (
+                parsed.type === 'message' &&
+                parsed.value &&
+                parsed.value !== '[START]' &&
+                parsed.value !== '[DONE]'
+              ) {
+                setBotUpdateText('');
+
+                const text = parsed.value;
+                setMessages((prev) => {
+                  return prev.map((message) => {
+                    if (message.id !== botMessageId) {
+                      return message;
+                    }
+
+                    return { ...message, text: message.text + text };
+                  });
+                });
+              }
+            } catch {
+              // Ignore lines that are not valid JSON
+            }
+          }
+        }
+
+        newlineIndex = buffer.indexOf('\n');
+      }
+    }
+  };
+  const handleSend = async () => {
+    const { memberId, enterpriseToken } = authStore.getState();
     if (message.trim()) {
-      setMessages([
-        ...messages,
-        { id: messages.length + 1, text: message, sender: "user" },
+      setMessages((prev) => [
+        ...prev,
+        { id: prev.length + 1, text: message, sender: MessageSender.User },
       ]);
-      setMessage("");
+      setMessage('');
 
-      // Simulate bot response
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: prev.length + 1,
-            text: "Thanks for your message! This is a demo response.",
-            sender: "bot",
-          },
-        ]);
-      }, 1000);
+      if (!memberId || !enterpriseToken) return;
+      simulateBotResponse();
     }
   };
 
@@ -37,7 +150,7 @@ export default function CollapsibleChatbot() {
       {isOpen && (
         <div
           className={`bg-white rounded-2xl shadow-2xl mb-4 overflow-hidden transition-all duration-300 ${
-            isMinimized ? "h-16" : "h-[500px]"
+            isMinimized ? 'h-16' : 'h-[500px]'
           } w-[380px] flex flex-col`}
         >
           {/* Header */}
@@ -71,24 +184,37 @@ export default function CollapsibleChatbot() {
           {!isMinimized && (
             <>
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${
-                      msg.sender === "user" ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    <div
-                      className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
-                        msg.sender === "user"
-                          ? "bg-blue-600 text-white rounded-br-sm"
-                          : "bg-white text-gray-800 shadow-sm rounded-bl-sm"
-                      }`}
-                    >
-                      <p className="text-sm">{msg.text}</p>
+                {messages.map(
+                  (msg) =>
+                    msg.text.length > 0 && (
+                      <div
+                        key={msg.id}
+                        className={`flex ${
+                          msg.sender === MessageSender.User ? 'justify-end' : 'justify-start'
+                        }`}
+                      >
+                        <div
+                          className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                            msg.sender === MessageSender.User
+                              ? 'bg-blue-600 text-white rounded-br-sm'
+                              : 'bg-white text-gray-800 shadow-sm rounded-bl-sm'
+                          }`}
+                        >
+                          <p className="text-sm">{msg.text}</p>
+                        </div>
+                      </div>
+                    ),
+                )}
+
+                {/* UPDATE / TYPING BUBBLE */}
+                {botUpdateText && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[75%] bg-white border border-blue-100 shadow-md rounded-2xl px-4 py-3 flex items-center gap-2 animate-pulse">
+                      <div className="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce"></div>
+                      <p className="text-gray-700 text-sm font-medium">{botUpdateText}</p>
                     </div>
                   </div>
-                ))}
+                )}
               </div>
 
               {/* Input Area */}
@@ -98,7 +224,7 @@ export default function CollapsibleChatbot() {
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="Type your message..."
                     className="flex-1 px-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   />

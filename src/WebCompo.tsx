@@ -1,23 +1,43 @@
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { EnterPriseToken } from "./constants";
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
 
 class ReactWrapper extends HTMLElement {
-  static get observedAttributes() {
-    return ["enterprise-token", "user-token"];
+  static get observedAttributes(): string[] {
+    return ['enterprise-token', 'user-token', 'member-id', 'base_api'];
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
+    this._render();
+  }
+
+  private _render(): void {
     const root = ReactDOM.createRoot(this);
+    const props = this._getProps();
+
     root.render(
       <App
-        enterpriseToken={
-          this.getAttribute("enterprise-token") as EnterPriseToken
-        }
-        userToken={this.getAttribute("user-token") as string}
-      />
+        enterpriseToken={props.enterpriseToken}
+        userToken={props.userToken}
+        memberId={props.memberId}
+        baseApi={props.baseApi}
+      />,
     );
+  }
+
+  private _getProps(): {
+    enterpriseToken: string;
+    userToken: string;
+    memberId: string;
+    baseApi: string;
+  } {
+    return {
+      enterpriseToken: this.getAttribute('enterprise-token') || '',
+      userToken: this.getAttribute('user-token') || '',
+      memberId: this.getAttribute('member-id') || '',
+      baseApi: this.getAttribute('base_api') || 'https://dev.insurance.secondbrain.global/api/',
+    };
   }
 }
 
-customElements.define("second-brain-chatbot", ReactWrapper);
+customElements.define('second-brain-chatbot', ReactWrapper);

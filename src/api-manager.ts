@@ -1,46 +1,69 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios';
+import { ApiConfig, ApiResponse } from './types/api.type';
+import { authStore } from './store/auth.store';
 
-// Create axios instance
-const axiosInstance: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_BASE_API,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+class ApiService {
+  private _axiosInstance: AxiosInstance;
 
-const AxiosRequestInterceptorsConfig = async (
-    config: InternalAxiosRequestConfig
-) => {
-    // todo to take token from store and use it here.
-    const token = 'hello';
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+  constructor() {
+    this._axiosInstance = axios.create({
+      headers: { 'Content-Type': 'application/json' },
+    });
+    this._setupInterceptors();
+  }
+
+  public async request<ResponsePayload, RequestBody = undefined>(
+    config: ApiConfig<RequestBody>,
+  ): Promise<ApiResponse<ResponsePayload>> {
+    try {
+      return await this._axiosInstance.request<
+        ResponsePayload,
+        ApiResponse<ResponsePayload>,
+        RequestBody
+      >(config);
+    } catch (error) {
+      return this._handleError(error as AxiosError);
     }
+  }
+
+  private _setupInterceptors(): void {
+    this._axiosInstance.interceptors.request.use(
+      (config) => this._handleRequestInterceptor(config),
+      (error) => Promise.reject(error),
+    );
+  }
+
+  private _handleRequestInterceptor(
+    config: InternalAxiosRequestConfig,
+  ): InternalAxiosRequestConfig {
+    const baseApi = authStore.getState().baseApi;
+    const normalizedBase = this._normalizeUrl(baseApi || '');
+    const normalizedUrl = this._normalizeUrl(config.url || '', true);
+
+    config.url = normalizedUrl ? `${normalizedBase}/${normalizedUrl}` : normalizedBase;
+    delete config.baseURL;
+
     return config;
-};
+  }
 
-const AxiosRequestInterceptorsErrorHandler = (error: unknown) => {
-    return Promise.reject(error);
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AxiosResponseInterceptorsErrorHandler = (error: any) => {
-    if (error.response && error.response.status === 401) {
-        // todo: Handle 401 error
+  private _normalizeUrl(url: string, isRelative: boolean = false): string {
+    if (isRelative) {
+      return url.replace(/^\/+/, '');
     }
-    return Promise.reject(error.response);
+    return url.replace(/\/+$/, '');
+  }
+
+  private _handleError(error: AxiosError): Promise<never> {
+    console.error('❌ API Error:', error.message);
+    console.error('   Request URL:', error.config?.url);
+    return Promise.reject(error);
+  }
+}
+
+export const apiService = new ApiService();
+
+export const apiCall = async <ResponsePayload, RequestBody = undefined>(
+  apiConfig: ApiConfig<RequestBody>,
+): Promise<ApiResponse<ResponsePayload>> => {
+  return apiService.request<ResponsePayload, RequestBody>(apiConfig);
 };
-
-// Request interceptor
-axiosInstance.interceptors.request.use(
-    AxiosRequestInterceptorsConfig,
-    AxiosRequestInterceptorsErrorHandler
-);
-
-// Response interceptor
-axiosInstance.interceptors.response.use((response) => {
-    return response.data;
-}, AxiosResponseInterceptorsErrorHandler);
-
-export default axiosInstance;
-

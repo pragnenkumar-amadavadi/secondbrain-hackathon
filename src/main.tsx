@@ -1,10 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <App
+      enterpriseToken={'97e6f460-b779-4568-b34f-b5ae32d7a1f8'}
+      userToken="eyJraWQiOiJCODlZNExaM1psdGZPMVh2MTdyS2VKelhvdmV3SStITFFBbmhROExRZmx3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJhMTMzNmQ0YS02MDExLTcwZTItMDY0ZS0zOTc2ZmE0NDAzYWIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGgtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aC0xX1o3akFzUTJ0TSIsImNsaWVudF9pZCI6IjdqcmQwNTgxbjU5bDc3cTkwYTBhbzQ4dDRpIiwib3JpZ2luX2p0aSI6IjQxNGU0YjYyLWM2YzUtNDBmNS1iZTE3LWViMGU5ZTA2OGU3OSIsImV2ZW50X2lkIjoiMzM0MDI0YTctZDkxMS00NzBjLWIwODQtNDNkZmY3YjdjNzRiIiwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJhd3MuY29nbml0by5zaWduaW4udXNlci5hZG1pbiIsImF1dGhfdGltZSI6MTc2NDA2NTc4MSwiZXhwIjoxNzY0MTYyMDk3LCJpYXQiOjE3NjQxNTg0OTcsImp0aSI6ImE5YTNkZTE2LTRkMTItNDU5ZC04ODlmLTgzMWExMzRlMzdlNSIsInVzZXJuYW1lIjoiYTEzMzZkNGEtNjAxMS03MGUyLTA2NGUtMzk3NmZhNDQwM2FiIn0.pfsx6j9obA2qHo0CqD0suZyGcYDmqutHlNNcqqSF6H06ROaPNdRuB_TTpgGCk0gUo7OTHFOtLCALgQY9zwvPbxk82kpe6gGDtl3md4d7DOagoT3jZT1urVPENY_RRW9SR6pAkmLq8EPewm18FJ_v7s7I2lHXErG_jJ-yNRP6Nxdnqy9Z23wqL8BNZ-0eRRecYfELJUiSxtW8aDkodkg19dqXvPD6z15QstDxMZlpa6tYWKc-D6_mLfPRFJDUX0KjW_uzuvV-XCw2gx5hIqST7j9_t-B6vfcwU94-ZLQYiTvWzY82_s2vl5-9523SNA5ociCRVVx_8HgNia1L6r2hdA"
+      memberId={'a19cd601-3bce-4b96-883f-61d427cdf2d9'}
+      baseApi="https://dev.insurance.secondbrain.global/api/"
+    />
   </StrictMode>,
-)
+);
