@@ -25,7 +25,7 @@ export const ChatInput = ({ message, setMessage, onSend, isMessageStreaming, tex
           className="flex-1 px-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-(--primary-hover)  focus:border-transparent text-sm"
         />
         <button
-          disabled={!!!message || isMessageStreaming}
+          disabled={isMessageStreaming}
           onClick={onSend}
           className="bg-(--primary-color) text-white rounded-full p-2.5 hover:bg-(--primary-hover) transition-colors shadow-lg hover:shadow-xl cursor-pointer  disabled:bg-gray-300
     disabled:text-gray-500
