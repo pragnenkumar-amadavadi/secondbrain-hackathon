@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, MessageCircle, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
 
 interface ChatHeaderProps {
   onMinimize: () => void;
