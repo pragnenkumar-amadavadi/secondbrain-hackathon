@@ -1,7 +1,8 @@
-import { MessageCircle, Minus } from 'lucide-react';
+import { ChevronDown, ChevronUp, MessageCircle, X } from 'lucide-react';
 
 interface ChatHeaderProps {
   onMinimize: () => void;
+  isMinimized?: boolean
   onClose: () => void;
   textUpdates?: {
     chatTitle?: string;
@@ -10,7 +11,7 @@ interface ChatHeaderProps {
   };
 }
 
-export const ChatHeader = ({ onMinimize, textUpdates }: ChatHeaderProps) => {
+export const ChatHeader = ({ onMinimize, textUpdates, isMinimized }: ChatHeaderProps) => {
   return (
     <div className="p-4 flex items-center justify-between bg-(--primary-color)">
       <div className="flex items-center gap-3">
@@ -27,11 +28,12 @@ export const ChatHeader = ({ onMinimize, textUpdates }: ChatHeaderProps) => {
         </div>
       </div>
       <div className="flex gap-2">
+
         <button
           onClick={onMinimize}
           className="text-white hover:bg-(--primary-hover) rounded-lg p-1.5 transition-colors cursor-pointer"
         >
-          <Minus className="w-5 h-5" />
+          {isMinimized ? <ChevronUp /> : <ChevronDown />}
         </button>
       </div>
     </div>
