@@ -30,8 +30,6 @@ function App({ enterpriseToken, userToken, memberId, baseApi, theme, textUpdates
     authStore.getState().setTextUpdates({ ...defaultTextUpdates, ...textUpdates });
   }, [enterpriseToken, userToken, memberId, baseApi, textUpdates]);
 
-  console.log(theme,'theme')
-
   useEffect(() => {
     applyTheme({
       primaryColor: theme?.primaryColor || '#ff0000',
