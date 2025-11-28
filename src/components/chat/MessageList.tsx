@@ -1,5 +1,7 @@
+import { useEffect, useRef } from 'react';
 import { MessageSender } from '../../constants/chat.constants';
 import { Message } from '../../hooks/useChat';
+import { MarkdownRenderer } from '../MarkdownRenderer';
 
 interface MessageListProps {
   messages: Message[];
@@ -7,6 +9,16 @@ interface MessageListProps {
 }
 
 export const MessageList = ({ messages, botUpdateText }: MessageListProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, botUpdateText]);
+
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
       {messages.map(
@@ -18,15 +30,19 @@ export const MessageList = ({ messages, botUpdateText }: MessageListProps) => {
                 msg.sender === MessageSender.User ? 'justify-end' : 'justify-start'
               }`}
             >
-              <div
-                className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
-                  msg.sender === MessageSender.User
-                    ? 'bg-blue-600 text-white rounded-br-sm'
-                    : 'bg-white text-gray-800 shadow-sm rounded-bl-sm'
-                }`}
-              >
-                <p className="text-sm">{msg.text}</p>
-              </div>
+              {msg.sender === MessageSender.User && (
+                <div
+                  className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${'bg-blue-600 text-white rounded-br-sm'}`}
+                >
+                  <p className="text-sm">{msg.text}</p>
+                </div>
+              )}
+
+              {msg.sender === MessageSender.Bot && (
+                <div className="max-w-[80%] rounded-2xl px-4 py-2.5 bg-white text-gray-800 shadow-sm rounded-bl-sm">
+                  <MarkdownRenderer content={msg.text} enableGfm={true} enableMath={true} />
+                </div>
+              )}
             </div>
           ),
       )}
@@ -40,6 +56,7 @@ export const MessageList = ({ messages, botUpdateText }: MessageListProps) => {
           </div>
         </div>
       )}
+      <div ref={messagesEndRef} />
     </div>
   );
 };
