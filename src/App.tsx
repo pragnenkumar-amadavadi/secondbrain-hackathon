@@ -32,8 +32,10 @@ function App({ enterpriseToken, userToken, memberId, baseApi, theme, textUpdates
 
   useEffect(() => {
     applyTheme({
-      primaryColor: '#ff00b7',
-      secondaryColor: '#fff',
+      primaryColor: theme?.primaryColor || '#ff0000',
+      secondaryColor: theme?.secondaryColor || '#fff',
+      chatBotResponseBGColor: theme?.chatBotResponseBGColor || '',
+      chatBotResponseTextColor: theme?.chatBotResponseTextColor || '',
     });
   }, [theme]);
 

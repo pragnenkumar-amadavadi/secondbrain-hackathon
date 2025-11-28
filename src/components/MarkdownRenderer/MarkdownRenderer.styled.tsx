@@ -1,14 +1,14 @@
 import React from 'react';
 
 interface MarkdownContainerProps {
-    children: React.ReactNode;
-    className?: string;
+  children: React.ReactNode;
+  className?: string;
 }
 
 export const MarkdownContainer = ({ children, className = '' }: MarkdownContainerProps) => {
-    return (
-        <div
-            className={`
+  return (
+    <div
+      className={`
             prose prose-slate max-w-none
             prose-headings:font-semibold prose-headings:text-gray-900
             prose-h1:text-4xl prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-2 prose-h1:mt-6 prose-h1:mb-3
@@ -17,7 +17,7 @@ export const MarkdownContainer = ({ children, className = '' }: MarkdownContaine
             prose-h4:text-xl
             prose-h5:text-lg
             prose-h6:text-base prose-h6:text-gray-500
-            prose-p:mb-6 prose-p:leading-relaxed
+            prose-p:leading-relaxed
             prose-code:bg-gray-200 prose-code:text-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
             prose-pre:bg-gray-100 prose-pre:text-gray-800 prose-pre:p-4 prose-pre:rounded-md prose-pre:text-xs prose-pre:overflow-x-auto
             prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:text-gray-500 prose-blockquote:italic
@@ -29,8 +29,8 @@ export const MarkdownContainer = ({ children, className = '' }: MarkdownContaine
             prose-hr:my-8 prose-hr:border-gray-300
             ${className}
         `}
-        >
-            {children}
-        </div>
-    );
+    >
+      {children}
+    </div>
+  );
 };
