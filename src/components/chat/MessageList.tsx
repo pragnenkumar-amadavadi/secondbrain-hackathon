@@ -21,8 +21,8 @@ export const MessageList = ({ messages, botUpdateText }: MessageListProps) => {
               <div
                 className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
                   msg.sender === MessageSender.User
-                    ? 'bg-blue-600 text-white rounded-br-sm'
-                    : 'bg-white text-gray-800 shadow-sm rounded-bl-sm'
+                    ? 'bg-(--primary-color) text-white rounded-br-sm'
+                    : 'bg-(--chatBotResponseBGColor) text-(--chatBotResponseTextColor) shadow-sm rounded-bl-sm'
                 }`}
               >
                 <p className="text-sm">{msg.text}</p>
@@ -35,7 +35,7 @@ export const MessageList = ({ messages, botUpdateText }: MessageListProps) => {
       {botUpdateText && (
         <div className="flex justify-start">
           <div className="max-w-[75%] bg-white border border-blue-100 shadow-md rounded-2xl px-4 py-3 flex items-center gap-2 animate-pulse">
-            <div className="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce"></div>
+            <div className="w-2.5 h-2.5 bg-(--primary-color) rounded-full animate-bounce"></div>
             <p className="text-gray-700 text-sm font-medium">{botUpdateText}</p>
           </div>
         </div>

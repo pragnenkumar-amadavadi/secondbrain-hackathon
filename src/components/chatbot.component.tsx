@@ -3,6 +3,7 @@ import { ChatHeader } from './chat/ChatHeader';
 import { MessageList } from './chat/MessageList';
 import { ChatInput } from './chat/ChatInput';
 import { ChatToggle } from './chat/ChatToggle';
+import { authStore } from '../store/auth.store';
 
 export default function CollapsibleChatbot() {
   const {
@@ -29,12 +30,18 @@ export default function CollapsibleChatbot() {
           <ChatHeader
             onMinimize={() => setIsMinimized(!isMinimized)}
             onClose={() => setIsOpen(false)}
+            textUpdates={authStore.getState().textUpdates}
           />
 
           {!isMinimized && (
             <>
               <MessageList messages={messages} botUpdateText={botUpdateText} />
-              <ChatInput message={message} setMessage={setMessage} onSend={handleSend} />
+              <ChatInput
+                message={message}
+                setMessage={setMessage}
+                onSend={handleSend}
+                textUpdates={authStore.getState().textUpdates}
+              />
             </>
           )}
         </div>

@@ -13,4 +13,11 @@ export const authStore = create<AuthStore>((set) => ({
   setMemberId: (id: string) => set({ memberId: id }),
   baseApi: '',
   setBaseApi: (id: string) => set({ baseApi: id }),
+  textUpdates: {
+    chatTitle: 'Chat Support',
+    chatSubtitle: `We're here to help`,
+    inputText: 'Type your message...',
+  },
+  setTextUpdates: (updates: { chatTitle?: string; chatSubtitle?: string; inputText?: string }) =>
+    set({ textUpdates: updates }),
 }));
