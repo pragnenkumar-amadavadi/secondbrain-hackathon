@@ -9,6 +9,7 @@ export interface Message {
   id: number | string;
   text: string;
   sender: MessageSender;
+  isError?: boolean
 }
 
 export const useChat = () => {
@@ -21,114 +22,161 @@ export const useChat = () => {
   ]);
 
   const simulateBotResponse = async () => {
-    const { conversationId, memberId, enterpriseToken, setConversationId } = authStore.getState();
-    let convoId = conversationId;
-    if (!memberId || !enterpriseToken) return;
-    if (!conversationId) {
-      const initiateChatResponse = await ChatApi.initiateChat({
-        body: {
-          title: message,
-          member_uuid: memberId,
-        },
-        params: {
-          enterpriseId: enterpriseToken,
-        },
-      });
-      setConversationId(initiateChatResponse.data.conversation_uuid);
-      convoId = initiateChatResponse.data.conversation_uuid;
-    }
-    let botMessageId = messages.length + 1;
+    try {
+      const { conversationId, memberId, enterpriseToken, setConversationId } = authStore.getState();
+      let convoId = conversationId;
+      if (!memberId || !enterpriseToken) return;
+      if (!conversationId) {
+        try {
+          const initiateChatResponse = await ChatApi.initiateChat({
+            body: {
+              title: message,
+              member_uuid: memberId,
+            },
+            params: {
+              enterpriseId: enterpriseToken,
+            },
+          });
+          setConversationId(initiateChatResponse.data.conversation_uuid);
+          convoId = initiateChatResponse.data.conversation_uuid;
+        }
+        catch (error: any) {
+          console.error("initiateChat failed:", error);
 
-    setMessages((prev) => {
-      botMessageId = prev.length + 1;
-      return [...prev, { id: botMessageId, text: '', sender: MessageSender.Bot }];
-    });
-    const body = {
-      member_uuid: memberId,
-      query: message,
-      stream: true,
-      citations: true,
-    };
+          // Extract backend message
+          const errorMessage =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Something went wrong";
 
-    const baseApi = authStore.getState().baseApi;
-    const response = await fetch(
-      parseEndpoint(baseApi + ENDPOINTS.SEND_MESSAGE, {
-        [QUERY_PATH.CONVERSATION_ID]: convoId!,
-        [QUERY_PATH.ENTERPRISE_ID]: enterpriseToken,
-      }),
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'text/event-stream',
-        },
-        body: JSON.stringify(body),
-      },
-    );
+          // Show error in chat
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: errorMessage,
+              sender: MessageSender.Bot,
+              isError: true,
+            },
+          ]);
 
-    if (!response.body) return;
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-
-    let done = false;
-    let buffer = '';
-
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-
-      if (!value) {
-        continue;
+          return;
+        }
       }
 
-      buffer += decoder.decode(value, { stream: !done });
+      let botMessageId = messages.length + 1;
 
-      let newlineIndex = buffer.indexOf('\n');
-      while (newlineIndex !== -1) {
-        const rawLine = buffer.slice(0, newlineIndex).trim();
-        buffer = buffer.slice(newlineIndex + 1);
+      setMessages((prev) => {
+        botMessageId = prev.length + 1;
+        return [...prev, { id: botMessageId, text: '', sender: MessageSender.Bot }];
+      });
+      const body = {
+        member_uuid: memberId,
+        query: message,
+        stream: true,
+        citations: true,
+      };
 
-        if (rawLine) {
-          // Try to extract JSON object from the line (handles prefixes like "delta ")
-          const jsonStart = rawLine.indexOf('{');
-          if (jsonStart !== -1) {
-            const jsonPart = rawLine.slice(jsonStart);
-            try {
-              const parsed = JSON.parse(jsonPart) as {
-                type?: string;
-                value?: string;
-              };
-              if (parsed.type === 'update') {
-                const text = parsed.value;
-                setBotUpdateText(text || '');
-              } else if (
-                parsed.type === 'message' &&
-                parsed.value &&
-                parsed.value !== '[START]' &&
-                parsed.value !== '[DONE]'
-              ) {
-                setBotUpdateText('');
+      const baseApi = authStore.getState().baseApi;
+      const response = await fetch(
+        parseEndpoint(baseApi + ENDPOINTS.SEND_MESSAGE, {
+          [QUERY_PATH.CONVERSATION_ID]: convoId!,
+          [QUERY_PATH.ENTERPRISE_ID]: enterpriseToken,
+        }),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'text/event-stream',
+          },
+          body: JSON.stringify(body),
+        },
+      );
 
-                const text = parsed.value;
-                setMessages((prev) => {
-                  return prev.map((message) => {
-                    if (message.id !== botMessageId) {
-                      return message;
-                    }
-
-                    return { ...message, text: message.text + text };
-                  });
-                });
-              }
-            } catch {
-              // Ignore lines that are not valid JSON
-            }
-          }
+      if (!response.ok) {
+        let errorMessage = "Something went wrong";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData?.message || errorMessage;
+        } catch (e) {
+          throw new Error(errorMessage);
         }
 
-        newlineIndex = buffer.indexOf('\n');
+        throw new Error(errorMessage);
       }
+
+      if (!response.body) return;
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      let done = false;
+      let buffer = '';
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+
+        if (!value) {
+          continue;
+        }
+
+        buffer += decoder.decode(value, { stream: !done });
+
+        let newlineIndex = buffer.indexOf('\n');
+        while (newlineIndex !== -1) {
+          const rawLine = buffer.slice(0, newlineIndex).trim();
+          buffer = buffer.slice(newlineIndex + 1);
+
+          if (rawLine) {
+            // Try to extract JSON object from the line (handles prefixes like "delta ")
+            const jsonStart = rawLine.indexOf('{');
+            if (jsonStart !== -1) {
+              const jsonPart = rawLine.slice(jsonStart);
+              try {
+                const parsed = JSON.parse(jsonPart) as {
+                  type?: string;
+                  value?: string;
+                };
+                if (parsed.type === 'update') {
+                  const text = parsed.value;
+                  setBotUpdateText(text || '');
+                } else if (
+                  parsed.type === 'message' &&
+                  parsed.value &&
+                  parsed.value !== '[START]' &&
+                  parsed.value !== '[DONE]'
+                ) {
+                  setBotUpdateText('');
+
+                  const text = parsed.value;
+                  setMessages((prev) => {
+                    return prev.map((message) => {
+                      if (message.id !== botMessageId) {
+                        return message;
+                      }
+
+                      return { ...message, text: message.text + text };
+                    });
+                  });
+                }
+              } catch {
+                // Ignore lines that are not valid JSON
+              }
+            }
+          }
+
+          newlineIndex = buffer.indexOf('\n');
+        }
+      }
+    }
+    catch (err: any) {
+      let botMessageId = messages.length + 1;
+      const errorText = err?.message || "Something went wrong";
+      setMessages((prev) => {
+        botMessageId = prev.length + 1;
+        return [...prev, { id: botMessageId, text: errorText, sender: MessageSender.Bot, isError: true }];
+      });
     }
   };
 

@@ -14,16 +14,14 @@ export const MessageList = ({ messages, botUpdateText }: MessageListProps) => {
           msg.text.length > 0 && (
             <div
               key={msg.id}
-              className={`flex ${
-                msg.sender === MessageSender.User ? 'justify-end' : 'justify-start'
-              }`}
+              className={`flex ${msg.sender === MessageSender.User ? 'justify-end' : 'justify-start'
+                }`}
             >
               <div
-                className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
-                  msg.sender === MessageSender.User
+                className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${msg.sender === MessageSender.User
                     ? 'bg-blue-600 text-white rounded-br-sm'
                     : 'bg-white text-gray-800 shadow-sm rounded-bl-sm'
-                }`}
+                  } ${msg?.isError ? '!bg-red-50 !text-red-600 border border-red-300 !shadow-none' : ''}`}
               >
                 <p className="text-sm">{msg.text}</p>
               </div>
