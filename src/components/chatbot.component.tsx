@@ -15,6 +15,7 @@ export default function CollapsibleChatbot() {
     messages,
     botUpdateText,
     handleSend,
+    streaming
   } = useChat();
 
   return (
@@ -34,7 +35,7 @@ export default function CollapsibleChatbot() {
           {!isMinimized && (
             <>
               <MessageList messages={messages} botUpdateText={botUpdateText} />
-              <ChatInput message={message} setMessage={setMessage} onSend={handleSend} />
+              <ChatInput isMessageStreaming={streaming} message={message} setMessage={setMessage} onSend={handleSend} />
             </>
           )}
         </div>

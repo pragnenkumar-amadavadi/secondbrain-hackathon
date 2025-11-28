@@ -17,6 +17,8 @@ export const useChat = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [message, setMessage] = useState('');
   const [botUpdateText, setBotUpdateText] = useState('');
+  const [streaming, setStreaming] = useState(false);
+
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: 'Hi! How can I help you today?', sender: MessageSender.Bot },
   ]);
@@ -110,6 +112,7 @@ export const useChat = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
 
+      setStreaming(true)
       let done = false;
       let buffer = '';
 
@@ -169,8 +172,11 @@ export const useChat = () => {
           newlineIndex = buffer.indexOf('\n');
         }
       }
+
+      setStreaming(false)
     }
     catch (err: any) {
+      setStreaming(false)
       let botMessageId = messages.length + 1;
       const errorText = err?.message || "Something went wrong";
       setMessages((prev) => {
@@ -225,5 +231,6 @@ export const useChat = () => {
     messages,
     botUpdateText,
     handleSend,
+    streaming
   };
 };
