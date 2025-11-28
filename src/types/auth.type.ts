@@ -13,4 +13,14 @@ export type AuthStore = {
   setConversationId: (id: string) => void;
   baseApi: string;
   setBaseApi: (id: string) => void;
+  textUpdates: {
+    chatTitle?: string;
+    chatSubtitle?: string;
+    inputText?: string;
+  };
+  setTextUpdates: (updates: {
+    chatTitle?: string;
+    chatSubtitle?: string;
+    inputText?: string;
+  }) => void;
 };

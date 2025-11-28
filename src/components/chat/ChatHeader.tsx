@@ -3,18 +3,27 @@ import { MessageCircle, Minus } from 'lucide-react';
 interface ChatHeaderProps {
   onMinimize: () => void;
   onClose: () => void;
+  textUpdates?: {
+    chatTitle?: string;
+    chatSubtitle?: string;
+    inputText?: string;
+  };
 }
 
-export const ChatHeader = ({ onMinimize }: ChatHeaderProps) => {
+export const ChatHeader = ({ onMinimize, textUpdates }: ChatHeaderProps) => {
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 flex items-center justify-between">
+    <div className="p-4 flex items-center justify-between bg-(--primary-color)">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-          <MessageCircle className="w-6 h-6 text-blue-600" />
+        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white">
+          <MessageCircle className="w-6 h-6 text-(--primary-color)" />
         </div>
         <div>
-          <h3 className="text-white font-semibold">Chat Support</h3>
-          <p className="text-blue-100 text-xs">We're here to help</p>
+          <h3 className="font-semibold text-(--secondary-color)">
+            {textUpdates?.chatTitle || 'Chat Support'}
+          </h3>
+          <p className="text-xs text-(--secondary-color) opacity-70">
+            {textUpdates?.chatSubtitle || `We're here to help`}
+          </p>
         </div>
       </div>
       <div className="flex gap-2">
