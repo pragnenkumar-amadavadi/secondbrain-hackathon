@@ -29,7 +29,7 @@ export const ChatHeader = ({ onMinimize, textUpdates }: ChatHeaderProps) => {
       <div className="flex gap-2">
         <button
           onClick={onMinimize}
-          className="text-white hover:bg-blue-800 rounded-lg p-1.5 transition-colors cursor-pointer"
+          className="text-white hover:bg-(--primary-hover) rounded-lg p-1.5 transition-colors cursor-pointer"
         >
           <Minus className="w-5 h-5" />
         </button>
