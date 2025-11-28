@@ -9,10 +9,10 @@ type AppProps = {
   userToken: string;
   memberId: string;
   baseApi: string;
-  theme: {
+  theme?: {
     [key: string]: string;
   };
-  textUpdates: {
+  textUpdates?: {
     [key: string]: string;
   };
 };
@@ -22,13 +22,15 @@ function App({ enterpriseToken, userToken, memberId, baseApi, theme, textUpdates
     if (!enterpriseToken || !userToken || !memberId || !baseApi) {
       return;
     }
-
+    const { textUpdates: defaultTextUpdates } = authStore.getState();
     authStore.getState().setEnterpriseToken(enterpriseToken);
     authStore.getState().setUserToken(userToken);
     authStore.getState().setMemberId(memberId);
     authStore.getState().setBaseApi(baseApi);
-    authStore.getState().setTextUpdates(textUpdates);
+    authStore.getState().setTextUpdates({ ...defaultTextUpdates, ...textUpdates });
   }, [enterpriseToken, userToken, memberId, baseApi, textUpdates]);
+
+  console.log(theme,'theme')
 
   useEffect(() => {
     applyTheme({

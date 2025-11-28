@@ -73,8 +73,6 @@ export const applyTheme = (theme: {
   document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
   document.documentElement.style.setProperty('--secondary-color', theme.secondaryColor);
 
-  console.log(theme.primaryColor, darken(theme.primaryColor, 30));
-
   document.documentElement.style.setProperty('--primary-hover', darken(theme.primaryColor, 30));
 
   if (theme.chatBotResponseBGColor) {
