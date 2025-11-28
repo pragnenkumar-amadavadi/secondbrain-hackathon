@@ -24,7 +24,7 @@ export const ChatInput = ({ message, setMessage, onSend, textUpdates }: ChatInpu
         />
         <button
           onClick={onSend}
-          className="bg-(--primary-color) text-white rounded-full p-2.5 hover:bg-(--primary-hover) transition-colors shadow-lg hover:shadow-xl"
+          className="bg-(--primary-color) text-white rounded-full p-2.5 hover:bg-(--primary-hover) transition-colors shadow-lg hover:shadow-xl cursor-pointer"
         >
           <Send className="w-5 h-5" />
         </button>

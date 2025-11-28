@@ -1,4 +1,4 @@
-import { MessageCircle, Minus, X } from 'lucide-react';
+import { MessageCircle, Minus } from 'lucide-react';
 
 interface ChatHeaderProps {
   onMinimize: () => void;
@@ -10,7 +10,7 @@ interface ChatHeaderProps {
   };
 }
 
-export const ChatHeader = ({ onMinimize, onClose, textUpdates }: ChatHeaderProps) => {
+export const ChatHeader = ({ onMinimize, textUpdates }: ChatHeaderProps) => {
   return (
     <div className="p-4 flex items-center justify-between bg-(--primary-color)">
       <div className="flex items-center gap-3">
@@ -29,15 +29,9 @@ export const ChatHeader = ({ onMinimize, onClose, textUpdates }: ChatHeaderProps
       <div className="flex gap-2">
         <button
           onClick={onMinimize}
-          className="rounded-lg p-1.5 transition-colors text-(--secondary-color) hover:bg-(--primary-hover)"
+          className="text-white hover:bg-blue-800 rounded-lg p-1.5 transition-colors cursor-pointer"
         >
           <Minus className="w-5 h-5" />
-        </button>
-        <button
-          onClick={onClose}
-          className="rounded-lg p-1.5 transition-colors text-(--secondary-color) hover:bg-(--primary-hover)"
-        >
-          <X className="w-5 h-5" />
         </button>
       </div>
     </div>

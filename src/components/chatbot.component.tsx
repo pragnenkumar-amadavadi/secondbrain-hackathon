@@ -19,13 +19,13 @@ export default function CollapsibleChatbot() {
   } = useChat();
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
       {/* Chat Window */}
       {isOpen && (
         <div
           className={`bg-white rounded-2xl shadow-2xl mb-4 overflow-hidden transition-all duration-300 ${
-            isMinimized ? 'h-16' : 'h-[500px]'
-          } w-[380px] flex flex-col`}
+            isMinimized ? 'h-16' : 'h-[80vh] sm:h-[500px]'
+          } w-[calc(100vw-2rem)] sm:w-[420px] flex flex-col`}
         >
           <ChatHeader
             onMinimize={() => setIsMinimized(!isMinimized)}

@@ -9,16 +9,13 @@ export const ChatToggle = ({ isOpen, onToggle }: ChatToggleProps) => {
   return (
     <button
       onClick={onToggle}
-      className="bg-(--primary-color) text-white rounded-full p-4 shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 relative group"
+      className="bg-(--primary-color) text-white rounded-full p-4 shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 relative group cursor-pointer"
     >
       {isOpen ? (
         <X className="w-6 h-6" />
       ) : (
         <>
           <MessageCircle className="w-6 h-6" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-            1
-          </span>
         </>
       )}
     </button>
