@@ -39,7 +39,7 @@ export const MessageList = ({ messages, botUpdateText }: MessageListProps) => {
               )}
 
               {msg.sender === MessageSender.Bot && (
-                <div className="max-w-[80%] rounded-2xl px-4 py-2.5 bg-(--chatBotResponseBGColor) text-(--chatBotResponseTextColor) shadow-sm rounded-bl-sm">
+                <div className="max-w-[80%] rounded-2xl px-4 py-2.5 bg-(--chatBotResponseBGColor) text-(--chatBotResponseTextColor) shadow-sm rounded-bl-sm overflow-x-auto">
                   <MarkdownRenderer content={msg.text} enableGfm={true} enableMath={true} />
                 </div>
               )}
