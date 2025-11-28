@@ -3,6 +3,8 @@ import { ChatHeader } from './chat/ChatHeader';
 import { MessageList } from './chat/MessageList';
 import { ChatInput } from './chat/ChatInput';
 import { ChatToggle } from './chat/ChatToggle';
+import { authStore } from '../store/auth.store';
+import { ChatInfo } from './chat/ChatInfo';
 
 export default function CollapsibleChatbot() {
   const {
@@ -17,6 +19,7 @@ export default function CollapsibleChatbot() {
     handleSend,
     streaming
   } = useChat();
+  const { memberId, enterpriseToken } = authStore.getState();
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
@@ -32,12 +35,13 @@ export default function CollapsibleChatbot() {
             isMinimized={isMinimized}
           />
 
-          {!isMinimized && (
+          {memberId && enterpriseToken ? (
+            !isMinimized &&
             <>
               <MessageList messages={messages} botUpdateText={botUpdateText} />
               <ChatInput isMessageStreaming={streaming} message={message} setMessage={setMessage} onSend={handleSend} />
             </>
-          )}
+          ) : <ChatInfo />}
         </div>
       )}
 
